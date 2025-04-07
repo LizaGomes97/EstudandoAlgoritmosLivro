@@ -4,6 +4,9 @@
 # #lobo come o bode
 # #bode come o maço de alfafa
 
+#PSEUDOCODIGO
+
+
 def verificar_estado_seguro(lado):
     """Verifica se um  lado é seguro, sem o lobo comendo o bode ou o bode comendo a alfafa"""
     if "homem" not in lado: # se homem nao esta presente
@@ -37,78 +40,195 @@ def preparar_bote (lado_origem, passageiro=None):
             bote.append(passageiro)
     return  bote
 
-def fazer_travessia():
-  
+def mostrar_estado(lado_origem, lado_destino):
+    """Mostrar o estado atual dos lados"""
+    print(f"Estado atual: \n Lado de Origem: {lado_origem} | Lado de Destino: {lado_destino}")
+
+def fazer_travessia_interativa():
+    """Executa a travessia de forma interativa"""
     #estado inicial
-    lado_inicial = ["homem", "lobo", "maço de alfafa","bode"]
+    lado_inicial = ["homem","lobo","maço de alfafa", "bode"]
     lado_final=[]
 
-    print (f"Estado inicial:  {lado_inicial} | {lado_final}")
+    mostrar_estado(lado_inicial,lado_final)
 
-    #primeira travessia, levar o bode
-    bote = preparar_bote(lado_inicial,"bode")
-    print(f"Bote atravessando com: {bote}")
-    lado_final = adicionar_itens(lado_final,bote)
+    while True:
+        #verifica se ja concluiu o desafio
+        if len(lado_inicial) == 0 and "homem" in lado_final and "lobo" in lado_final and "maço de alfafa" in lado_final and "bode" in lado_final :
+            print ("Parabens! Voce completou a travessia com sucesso!")
+            break
 
-    if not verificar_estado_seguro (lado_inicial):
-        print("ERROR: Estado inseguro detectado!")
-        return
-    print (f"Estado atual: {lado_inicial} | {lado_final}")
+        #verificar se há situaçoes inseguras
+        situacao_insegura_inicial = not verificar_estado_seguro(lado_inicial)
+        situacao_insegura_final = not verificar_estado_seguro(lado_final)
 
-    #Volta 1: homem retorna sozinho
-    bote = preparar_bote(lado_final)
-    print(f"Bote retornando com: {bote}")
-    lado_inicial= adicionar_itens(lado_inicial,bote)
-    lado_final = remover_itens(lado_final,bote)
+        if situacao_insegura_inicial or situacao_insegura_final:
+            print("ATENÇAO: Situaçao insegura detectada")
+            print("Deseja continuar mesmo assim? (s/n)")
+            resposta = input().lower()
+            if resposta != 's':
+                print("Travessia falhou! Tente novamente")
+                break
+            else:
+                print("Continuando...")
 
-    if not verificar_estado_seguro (lado_final):
-        print("ERROR: Estado inseguro detectado!")
-        return
-    print (f"Estado atual: {lado_inicial} | {lado_final}")
+        print("\nEscolha uma ação:")
+        print("1 - Levar passageiro do lado inicial para o lado final")
+        print("2 - Levar passageiro do lado final para o lado inicial")
+        print("3 - Voltar sozinho para o lado inicial")
+        print("4 - Voltar sozinho para o lado final")
+        print("5 - Sair")
 
-    #Segunda travessia, levar o maço de alfafa
-    bote = preparar_bote(lado_inicial,"maço de alfafa")
-    print(f"Bote atravessando com: {bote}")
-    lado_final = adicionar_itens(lado_final,bote)
+        escolha=input("Sua escolha:  ")
 
-    #levar o bode de volta
-    bote = preparar_bote(lado_final,"bode")
-    print(f"Bote atravessando com: {bote}")
-    lado_inicial= adicionar_itens(lado_inicial,bote)
+        if escolha =="1":
+            if "homem" not in lado_inicial:
+                print("O homem nao esta no lado inicial!")
+                continue
 
-    if not verificar_estado_seguro (lado_final):
-        print("ERROR: Estado inseguro detectado!")
-        return
-    print (f"Estado atual: {lado_inicial} | {lado_final}")
+            print("Escolha um passageiro:")
+            for i, item in enumerate(lado_inicial):
+                if item != "homem":
+                    print(f"{i} - {item}")
+            print("ou pressione Enter para ir sozinho")
 
-    #lavar o lobo
-    bote = preparar_bote(lado_inicial,"lobo")
-    print(f"Bote atravessando com: {bote}")
-    lado_final = adicionar_itens(lado_final,bote)
+            escolha_passageiro = input()
+            if escolha_passageiro =="":
+                passageiro = None
+            else:
+                try:
+                    indice = int(escolha_passageiro)
+                    passageiro = lado_inicial[indice]
+                    if passageiro == "homem":
+                        print ("Homem é quem dirige o barco! Escolha outro passageiro")
+                        continue
+                except (ValueError, IndexError):
+                    print("Escolha invalida!")
+                    continue
 
-    if not verificar_estado_seguro (lado_final):
-        print("ERROR: Estado inseguro detectado!")
-        return
-    print (f"Estado atual: {lado_inicial} | {lado_final}")
+            bote = preparar_bote(lado_inicial,passageiro)
+            print(f"Bote atravessando com: {bote}")
+            lado_final= adicionar_itens(lado_final,bote)
+        
+        elif escolha == "2":
+            if "homem" not in lado_final:
+                print("O homem nao esta no lado final!")
+                continue
 
-    #homem retorna sozinho
-    bote = preparar_bote(lado_final)
-    print(f"Bote retornando com: {bote}")
-    lado_inicial= adicionar_itens(lado_inicial,bote)
-    lado_final = remover_itens(lado_final,bote)
+            print("Escolha um passageiro:")
+            for i,item in enumerate(lado_final):
+                if item != "homem":
+                    print(f"{i} - {item}")
+            print("ou pressione Enter para ir sozinho")
 
-    #lavar o bode
-    bote = preparar_bote(lado_inicial,"bode")
-    print(f"Bote atravessando com: {bote}")
-    lado_final = adicionar_itens(lado_final,bote)
+            escolha_passageiro = input()
 
-    
-    if not verificar_estado_seguro (lado_final):
-        print("ERROR: Estado inseguro detectado!")
-        return
-    print (f"Estado atual: {lado_inicial} | {lado_final}")
-    
+            if escolha_passageiro == "":
+                passageiro = None
+            else:
+                try:
+                    indice = int(escolha_passageiro)
+                    passageiro = lado_final[indice]
+                    if passageiro == "homem":
+                        print("O homem é quem dirige o barco! Escolha outro passageiro.")
+                        continue
+                except (ValueError, IndexError):
+                    print("Escolha invalida!")
+                    continue
+
+            bote = preparar_bote(lado_final,passageiro)
+            print(f"Bote atravessando com: {bote}")
+            lado_inicial = adicionar_itens(lado_inicial,bote)
+
+        elif escolha == "3":
+            if "homem" not in lado_final:
+                print("O homem nao esta no lado final!")
+                continue
+
+            bote = preparar_bote(lado_final)
+            print(f"Bote atravessando com: {bote}")
+            lado_inicial = adicionar_itens(lado_inicial,bote)
+
+        elif escolha == "4":
+            if "homem" not in lado_inicial:
+                print("O homem nao esta no lado final!")
+                continue
+
+            bote = preparar_bote(lado_inicial)
+            print(f"Bote atravessando com: {bote}")
+            lado_final = adicionar_itens(lado_final,bote)
+
+        elif escolha =="5":
+            print("Saindo do jogo...")
+            break
+
+        else:
+            print("Opção inválida! Tente novamente.")
+            continue   
+        mostrar_estado(lado_inicial,lado_final)
+
+def fazer_travessia_automatica():
+    """Executa as sequencias de travessias automaticamente com verificação opcional"""
+    #estado inicial
+    lado_inicial = ["homem", "lobo","maço de alfafa", "bode"]
+    lado_final =[]
+
+    print("=== Estado Inicial ===")
+    mostrar_estado(lado_inicial,lado_final)
+
+    #sequencias de travessias
+    travessias =[
+        ("bode", True),
+        (None, False),
+        ("maço de alfafa", True),
+        ("bode",False),
+        ("lobo", True),
+        (None,False),
+        ("bode", True)
+
+    ]
+
+    permitir_situacoes_inseguras = input("Permitir situaçoes inseguras temporarias? (s/n):").lower()
+
+    for i, (passageiro, indo) in enumerate(travessias):
+        print(f"\n === Passo {i+1} ===")
+
+        if indo:
+            print (f"Levando{passageiro if passageiro else 'ninguem'} do lado inicial para o final")
+            bote = preparar_bote(lado_inicial,passageiro)
+            print(f"bote atravessando com: {bote}")
+            lado_final = adicionar_itens(lado_final, bote)
+        else:
+            print(f"Levando {passageiro if passageiro else 'ninguem'} do lado final para o inicial")
+            bote = preparar_bote(lado_final, passageiro)
+            print (f"Bote atravessadno com: {bote}")
+            lado_inicial = adicionar_itens(lado_inicial, bote)
+
+        mostrar_estado(lado_inicial, lado_final)
+
+        #verificar situaçoes inseguras
+        situacao_insegura_inicial = not verificar_estado_seguro(lado_inicial)
+        situacao_insegura_final= not verificar_estado_seguro(lado_final)
+
+        if( situacao_insegura_inicial or situacao_insegura_final) and not permitir_situacoes_inseguras:
+            print("ATENÇAO: Situaçao insegura detectada! A travessia foi interrompida.")
+            resposta = input("Deseja continuar mesmo assim? (s/n): ").lower()
+            if resposta != 's':
+                return
+            
+    print("\n=== Travessia concluida com sucesso! ===")
 
 if __name__ == "__main__":
-    fazer_travessia()
+    print("Escolha o modo de travessia:")
+    print("1 - Modo Interativo (você controla cada travessia)")
+    print("2 - Modo Automatico (sequencia pre-definida)")
+
+    escolha = input("Sua escolha: ")
+
+    if escolha =="1":
+        fazer_travessia_interativa()
+    elif escolha =="2":
+        fazer_travessia_automatica()
+    else:
+        print("Opção invalida!")
 
